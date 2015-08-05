@@ -29,11 +29,12 @@
     to
   )  
 )
+
 (defn pad-cell [[x y]]
   (apply concat (for [a (surrounding-peers x y) ] [a :d]))
 )
 
-(defn select-alive [space] (filter (fn [[k v]] (= v :l)) space))
+(defn select-alive [space] (into {} (filter (fn [[k v]] (= v :l)) space)))
 
 (defn pad-the-board [space]
   (let [
@@ -61,8 +62,5 @@
 )  
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!")
-  (println "yo mamma")
 )
