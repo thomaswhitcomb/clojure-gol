@@ -10,6 +10,7 @@
 (def blinker1-off {[1 1] :l [2 1] :l [0 1] :l})
 (def blinker2-on {[1,2] :l,[2,2] :l,[2,3] :l,[3,3] :l, [3,2] :l,[4,3] :l})
 (def blinker2-off {[4 3] :l, [3 4] :l, [4 2] :l, [1 3] :l, [2 1] :l, [1 2] :l})
+(def die-hard {[3,2] :l [3,3] :l [2,3] :l [7,2] :l  [8,2] :l,[9,2] :l [8 4] :l})
 
 (deftest count-neighbours
   (is (= (live-neighbours [1,1] {[0,0] :d,[0,1] :d,[0,2] :d,[1,0] :d,[1,1] :l,[1,2] :d,[2,0] :d,[2,1] :d,[2,2] :d}) 0))
@@ -36,4 +37,7 @@
   (is (= (run 1 blinker2-on) blinker2-off))
   (is (= (run 2 blinker2-on) blinker2-on))
   (is (= (run 3 blinker2-on) blinker2-off))
-)         
+)
+
+(deftest die-hard-test
+  (is (= (run 130 die-hard) {})))
