@@ -4,40 +4,36 @@
   )
 )
 
-(def space1 {[0,0] :d,[0,1] :l,[0,2] :l,[0,3] :l,[1,0] :d,[1,1] :d,[1,2] :l,[1,3] :l, [2,0] :l,[2,1] :d,[2,2] :d,[2,3] :d, [3,0] :d,[3,1] :d, [3,2] :d, [3,3] :l})
-
+(def oscillator-blinker {[2 2]:l [2 3]:l [2 4]:l })
+(def oscillator-beacon {[2 5]:l [2 6]:l [3 5]:l [3 6]:l [4 3]:l [4 4]:l [5 3]:l [5 4]:l  })
+(def spaceship-glider {[1 1]:l [2 1]:l [3 1]:l [3 2]:l [2 3]:l})
+(def oscillator-toad {[1,2] :l,[2,2] :l,[2,3] :l,[3,3] :l, [3,2] :l,[4,3] :l})
+(def diehard {[3,2] :l [3,3] :l [2,3] :l [7,2] :l  [8,2] :l,[9,2] :l [8 4] :l}) ; Goes away after 130 generations
 (def blinker1-on {[1,0] :l,[1,1] :l,[1,2] :l})
 (def blinker1-off {[1 1] :l [2 1] :l [0 1] :l})
 (def blinker2-on {[1,2] :l,[2,2] :l,[2,3] :l,[3,3] :l, [3,2] :l,[4,3] :l})
 (def blinker2-off {[4 3] :l, [3 4] :l, [4 2] :l, [1 3] :l, [2 1] :l, [1 2] :l})
-(def die-hard {[3,2] :l [3,3] :l [2,3] :l [7,2] :l  [8,2] :l,[9,2] :l [8 4] :l})
 
-(deftest count-neighbours
-  (is (= (live-neighbours [1,1] {[0,0] :d,[0,1] :d,[0,2] :d,[1,0] :d,[1,1] :l,[1,2] :d,[2,0] :d,[2,1] :d,[2,2] :d}) 0))
-  (is (= (live-neighbours [1,1] {[0,0] :d,[0,1] :d,[0,2] :l,[1,0] :d,[1,1] :l,[1,2] :d,[2,0] :d,[2,1] :d,[2,2] :d}) 1))
-  (is (= (live-neighbours [1,1] {[0,0] :l,[0,1] :d,[0,2] :l,[1,0] :d,[1,1] :l,[1,2] :d,[2,0] :l,[2,1] :l,[2,2] :l}) 5))
-)
-(deftest pad-cells
-  (is (= (apply sorted-map (pad-cell [1,1])) {[0 0] :d, [0 1] :d, [0 2] :d, [1 0] :d, [1 2] :d, [2 0] :d, [2 1] :d, [2 2] :d}))
-  (is (= (apply sorted-map (pad-cell [0,0])) {[-1 -1] :d, [-1 0] :d, [-1 1] :d, [0 -1] :d, [0 1] :d, [1 -1] :d, [1 0] :d, [1 1] :d}))
-)         
-(deftest pad-the-boards
-  (is (= (pad-the-board {}) {}))
-  (is (= (into (sorted-map) (pad-the-board {[1 1] :l})) {[0 0] :d, [0 1] :d, [0 2] :d, [1 0] :d, [1 1] :l, [1 2] :d, [2 0] :d, [2 1] :d, [2 2] :d}))
-  (is (= (into (sorted-map) (pad-the-board {[0 0] :l})) {[-1 -1] :d, [-1 0] :d, [-1 1] :d, [0 -1] :d, [0 0] :l, [0 1] :d, [1 -1] :d, [1 0] :d, [1 1] :d}))
-  (is (= (into (sorted-map) (pad-the-board {[15 15] :d,[0 0] :l,[2,2] :l,[1 1] :d})) {[-1 -1] :d, [-1 0] :d, [-1 1] :d, [0 -1] :d, [0 0] :l, [0 1] :d, [1 -1] :d, [1 0] :d, [1 1] :d, [1 2] :d, [1 3] :d, [2 1] :d, [2 2] :l, [2 3] :d, [3 1] :d, [3 2] :d, [3 3] :d}))
-) 
-(deftest blinker1s 
-  (is (= (run 1 blinker1-on) blinker1-off))
-  (is (= (run 2 blinker1-on) blinker1-on))       
-  (is (= (run 3 blinker1-on) blinker1-off))
-  (is (= (run 4 blinker1-on) blinker1-on))       
-)         
-(deftest blinker2s 
-  (is (= (run 1 blinker2-on) blinker2-off))
-  (is (= (run 2 blinker2-on) blinker2-on))
-  (is (= (run 3 blinker2-on) blinker2-off))
-)
+(deftest pad-the-board-test
+  (is (= (pad-the-board {[2 2]:l [2 3]:l [2 4]:l }) {[2 2] :l, [2 3] :l, [2 5] :d, [3 3] :d, [1 1] :d, [3 4] :d, [1 4] :d, [1 3] :d, [1 5] :d, [2 4] :l, [3 1] :d, [2 1] :d, [1 2] :d, [3 5] :d, [3 2] :d})))
 
-(deftest die-hard-test
-  (is (= (run 130 die-hard) {})))
+(deftest fast-forward-test
+  (is (=  (fast-forward 100 {[1 1]:l [2 1]:l [3 1]:l [3 2]:l [2 3]:l} (fn [_] nil))
+       {[27 -23] :d, [29 -23] :d, [27 -25] :d, [26 -21] :d, [27 -22] :l, [29 -22] :d, [28 -23] :l, [27 -21] :d, [25 -25] :d, [25 -23] :d, [26 -25] :d, [25 -24] :d, [28 -21] :d, [28 -24] :l, [26 -22] :d, [26 -24] :l, [27 -24] :l, [26 -23] :d, [29 -24] :d, [28 -22] :d, [28 -25] :d, [29 -25] :d})))
+
+(deftest live-neighbours-around-test
+  (is (= (live-neighbours-around  [0 0]  {[1 1]:l [2 1]:l [3 1]:l [3 2]:l [2 3]:l}) [[1 1]] ))
+  (is (= (live-neighbours-around  [1 2]  {[1 1]:l [2 1]:l [3 1]:l [3 2]:l [2 3]:l}) [[1 1] [2 3] [2 1]] )))
+
+(deftest select-alive-test
+  (is (= (select-alive (fast-forward 1 blinker1-on (fn [_] nil)))) blinker1-off)
+  (is (= (select-alive (fast-forward 2 blinker1-on (fn [_] nil)))) blinker1-on)
+  (is (= (select-alive (fast-forward 3 blinker1-on (fn [_] nil)))) blinker1-off)
+  (is (= (select-alive (fast-forward 4 blinker1-on (fn [_] nil)))) blinker1-on)
+  (is (= (select-alive (fast-forward 1 blinker2-on (fn [_] nil)))) blinker2-off)
+  (is (= (select-alive (fast-forward 2 blinker2-on (fn [_] nil)))) blinker2-on)
+  (is (= (select-alive (fast-forward 3 blinker2-on (fn [_] nil)))) blinker2-off)
+  (is (= (select-alive (fast-forward 4 blinker2-on (fn [_] nil)))) blinker2-on))
+
+(deftest diehard-test
+  (is (= (select-alive (fast-forward 130 diehard (fn [_] nil))) {})))
